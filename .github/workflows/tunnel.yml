@@ -1,0 +1,28 @@
+name: Tunnel
+on: workflow_dispatch
+jobs:
+  tunnel:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -fsSL https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -o xray.zip
+          unzip xray.zip
+          chmod +x xray
+          cat > config.json << EOF
+          {
+            "inbounds": [{
+              "port": 8080,
+              "protocol": "vless",
+              "settings": {
+                "clients": [{"id": "b831381d-6324-4d53-b4b9-8dae247bf9d7"}],
+                "decryption": "none"
+              },
+              "streamSettings": {
+                "network": "ws",
+                "wsSettings": {"path": "/"}
+              }
+            }],
+            "outbounds": [{"protocol": "freedom"}]
+          }
+          EOF
+          ./xray run -c config.json
